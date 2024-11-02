@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello BookingController!
+{% endblock %}
+
+{% block body %}
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="text-3xl font-bold text-center mb-6">Book Your Service</h1>
+		<h3 class="text-2xl font-bold text-center mb-6">{{ service.title }}</h1>
+
+		<div class="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6">
+			{{ form_start(bookingForm, {'attr': {'class': 'space-y-4'}}) }}
+
+              {{ form_row(bookingForm.date) }}
+              {{ form_row(bookingForm.time) }}
+
+			<div class="flex justify-center">
+				<button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition duration-200">
+					Confirm Booking
+				</button>
+			</div> 
+
+			{{ form_end(bookingForm) }}
+		</div>
+	</div>
+{% endblock %}
