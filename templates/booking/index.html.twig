@@ -1,26 +1,79 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello BookingController!
-{% endblock %}
+
+
 
 {% block body %}
-	<div class="container mx-auto px-4 py-8">
-		<h1 class="text-3xl font-bold text-center mb-6">Book Your Service</h1>
-		<h3 class="text-2xl font-bold text-center mb-6">{{ service.title }}</h1>
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-center mb-6">Réservez votre créneau</h1>
+    <h3 class="text-2xl font-bold text-center mb-6">{{ service.title }}</h3>
 
-		<div class="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6">
-			{{ form_start(bookingForm, {'attr': {'class': 'space-y-4'}}) }}
+    <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6">
+      {{ form_start(bookingForm) }}
 
-              {{ form_row(bookingForm.date) }}
-              {{ form_row(bookingForm.time) }}
+      <input type="hidden" id="service_id" value="{{ service.id }}">
 
-			<div class="flex justify-center">
-				<button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition duration-200">
-					Confirm Booking
-				</button>
-			</div> 
+      <div class="form-group">
+          {{ form_label(bookingForm.date) }}
+          {{ form_widget(bookingForm.date, {'attr': {'id': 'booking-date'}}) }}
+      </div>
 
-			{{ form_end(bookingForm) }}
-		</div>
-	</div>
+     <div id="available-slots" class="mt-4">
+            <p>Sélectionnez une date pour voir les créneaux disponibles.</p>
+            <div id="slots-container">
+            </div>
+        </div>
+
+      <div class="flex justify-center mt-4">
+          <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition duration-200">
+              Confirm Booking
+          </button>
+      </div>
+
+      {{ form_end(bookingForm) }}
+    </div>
+</div>
+<script defer>
+
+    document.addEventListener('DOMContentLoaded', function () {
+	    const dateInput = document.querySelector('#booking_form_date');
+        if (dateInput) {
+            dateInput.addEventListener('change', function () {
+                const date = this.value;
+                const serviceId = document.getElementById('service_id').value;
+                console.log('Selected date:', date);
+                if (date) {
+                    fetch(`/booking/get-available-slots?service_id=${serviceId}&date=${date}`)
+                         .then(response => {
+                            console.log('Réponse brute:', response);
+                            return response.json();
+                        })
+                        .then(slots => {
+                            console.log('Créneaux reçus:', slots); 
+
+                            const slotsContainer = document.getElementById('slots-container');
+                            slotsContainer.innerHTML = '';
+
+                            if (Array.isArray(slots) && slots.length > 0) {
+                                slots.forEach(slot => {
+                                    const label = document.createElement('label');
+                                    label.classList.add('block', 'text-sm', 'font-medium', 'text-gray-700');
+                                    label.innerHTML = `
+                                        <input type="radio" name="slot" value="${slot}" class="mr-2" id="slot-${slot}">
+                                        ${slot}
+                                    `;
+                                    slotsContainer.appendChild(label);
+                                });
+                            } else {
+                                slotsContainer.innerHTML = '<p>Aucun créneau disponible</p>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de la récupération des créneaux:', error);
+                        });
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

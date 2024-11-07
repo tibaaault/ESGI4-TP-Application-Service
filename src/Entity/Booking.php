@@ -49,11 +49,10 @@ class Booking
     {
         return $this->time;
     }
-
-    public function setTime(\DateTimeInterface $time): static
+    
+    public function setTime(?\DateTimeInterface $time): static
     {
         $this->time = $time;
-
         return $this;
     }
 
