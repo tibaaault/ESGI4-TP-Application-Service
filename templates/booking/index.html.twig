@@ -1,39 +1,7 @@
 {% extends 'base.html.twig' %}
-
-
-
-
 {% block body %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-center mb-6">Réservez votre créneau</h1>
-    <h3 class="text-2xl font-bold text-center mb-6">{{ service.title }}</h3>
 
-    <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6">
-      {{ form_start(bookingForm) }}
-
-      <input type="hidden" id="service_id" value="{{ service.id }}">
-
-      <div class="form-group">
-          {{ form_label(bookingForm.date) }}
-          {{ form_widget(bookingForm.date, {'attr': {'id': 'booking-date'}}) }}
-      </div>
-
-     <div id="available-slots" class="mt-4">
-            <p>Sélectionnez une date pour voir les créneaux disponibles.</p>
-            <div id="slots-container">
-            </div>
-        </div>
-
-      <div class="flex justify-center mt-4">
-          <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition duration-200">
-              Confirm Booking
-          </button>
-      </div>
-
-      {{ form_end(bookingForm) }}
-    </div>
-</div>
-<script defer>
+<script>
 
     document.addEventListener('DOMContentLoaded', function () {
 	    const dateInput = document.querySelector('#booking_form_date');
@@ -41,11 +9,9 @@
             dateInput.addEventListener('change', function () {
                 const date = this.value;
                 const serviceId = document.getElementById('service_id').value;
-                console.log('Selected date:', date);
                 if (date) {
                     fetch(`/booking/get-available-slots?service_id=${serviceId}&date=${date}`)
                          .then(response => {
-                            console.log('Réponse brute:', response);
                             return response.json();
                         })
                         .then(slots => {
@@ -76,4 +42,36 @@
         }
     });
 </script>
+
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-center mb-6">Réservez votre créneau</h1>
+    <h3 class="text-2xl font-bold text-center mb-6">{{ service.title }}</h3>
+
+    <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6">
+      {{ form_start(bookingForm) }}
+
+      <input type="hidden" id="service_id" value="{{ service.id }}">
+
+      <div class="form-group">
+          {{ form_label(bookingForm.date) }}
+          {{ form_widget(bookingForm.date, {'attr': {'id': 'booking-date'}}) }}
+      </div>
+
+     <div id="available-slots" class="mt-4">
+            <p>Sélectionnez une date pour voir les créneaux disponibles.</p>
+            <div id="slots-container">
+            </div>
+        </div>
+
+      <div class="flex justify-center mt-4">
+          <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition duration-200">
+              Confirm Booking
+          </button>
+      </div>
+
+      {{ form_end(bookingForm) }}
+    </div>
+</div>
+
 {% endblock %}

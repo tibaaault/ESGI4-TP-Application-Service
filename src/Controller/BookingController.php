@@ -141,7 +141,7 @@ class BookingController extends AbstractController
 
         $serviceId = $request->query->get('service_id');
         $date = $request->query->get('date');
-        error_log('Date received: ' . $date);
+
 
         if (!$serviceId || !$date) {
             return new JsonResponse(['error' => 'Invalid data'], Response::HTTP_BAD_REQUEST);
@@ -177,8 +177,18 @@ class BookingController extends AbstractController
         }
 
         $occupiedSlots = $bookingRepository->findAvailableHoraires($service, $dateTime);
-        $availableSlots = array_diff($allSlots, $occupiedSlots);
 
-        return new JsonResponse($availableSlots);
+        error_log('Occupied slots: ' . print_r($occupiedSlots, true));
+
+
+        $occupiedSlotsFormatted = array_map(function ($slot) {
+            error_log('Slot time: ' . $slot['time']->format('H:i'));
+            return $slot['time']->format('H:i'); 
+        }, $occupiedSlots);
+
+        $availableSlots = array_diff($allSlots, $occupiedSlotsFormatted);
+        error_log('Available slots: ' . print_r($availableSlots, true));
+
+        return new JsonResponse(array_values($availableSlots));
     }
 }
